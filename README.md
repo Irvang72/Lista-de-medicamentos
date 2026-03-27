@@ -1,0 +1,1 @@
+Esto lo hago simplemente para poder diferenciar entre los medicamentos que se pueden vender sin receta médica de los que requieren receta médica, aunque con más funciones que me facilitarían las cosas :v
