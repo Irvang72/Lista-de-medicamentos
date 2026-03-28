@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de medicamentos</title>
+    <title>Catálogo de Medicamentos - Irving</title>
     <style>
         :root {
             --bg: rgba(0, 0, 0, 0);
@@ -13,7 +13,6 @@
             --text-dim: #b0b0b0;
             --border: rgba(255, 255, 255, 0.15);
             --antibiotico: #ff4d4d;
-            /* Nuevos colores para Irving */
             --color-patente: #00ff88;  /* Verde Neón */
             --color-generico: #4da3ff;  /* Azul Neón */
         }
@@ -22,7 +21,7 @@
             margin: 0; padding: 0; height: 100%;
             font-family: 'Segoe UI', sans-serif;
             color: var(--text-main);
-            background-color: #00000000;
+            background-color: #00000000; 
         }
 
         /* VIDEO DE FONDO */
@@ -50,7 +49,7 @@
 
         #buscador {
             width: 100%; padding: 15px;
-            background: rgba(0, 0, 0, 0.186);
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border);
             border-radius: 12px; color: white;
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -68,61 +67,61 @@
         }
         .card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.12); }
         .card.requiere-receta { border-left: 5px solid var(--antibiotico); }
-        .card h3 { margin: 0; color: #fff; font-size: 22px; }
+        .card h3 { margin: 0; color: #fff; font-size: 20px; }
 
-        /* Estilo para las etiquetas de tipo */
-        .tipo-tag {
-            font-size: 12px;
+        .tipo-tag-card {
+            font-size: 11px;
             font-weight: bold;
             text-transform: uppercase;
-            padding: 2px 8px;
-            border-radius: 4px;
-            background: rgba(0,0,0,0.3);
         }
 
         /* MODAL */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 1000; display: none; justify-content: center; align-items: center;
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         }
 
         .modal-content {
             background: rgba(255, 255, 255, 0.07);
-            width: 90%; max-width: 400px; padding: 30px;
-            border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 90%; max-width: 400px; padding: 25px;
+            border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.2);
             text-align: center; color: white;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-            animation: aparecer 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            animation: aparecer 0.3s ease-out;
         }
 
         @keyframes aparecer {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .modal-overlay.active { display: flex; }
 
         .modal-img { 
-            width: 100%; max-height: 200px; object-fit: contain; 
-            background: white; border-radius: 20px; 
-            margin: 20px 0; padding: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            display: block;
+            margin: 15px auto; 
+            width: 100%; 
+            max-height: 200px; 
+            object-fit: contain; 
+            background: white; 
+            border-radius: 15px; 
+            padding: 10px;
+            box-sizing: border-box;
         }
 
         .info-grid {
-            text-align: left; display: grid; gap: 12px; margin-top: 15px;
+            text-align: left; display: grid; gap: 10px; margin-top: 15px;
         }
 
-        .info-item b { color: var(--accent); font-size: 13px; text-transform: uppercase; display: block; }
-        .info-item span { font-size: 16px; color: #eee; }
+        .info-item b { color: var(--accent); font-size: 12px; text-transform: uppercase; display: block; }
+        .info-item span { font-size: 15px; color: #eee; }
 
         .modal-close { 
             background: var(--accent); border: none; color: white; 
-            padding: 15px; border-radius: 15px; margin-top: 25px; 
+            padding: 12px; border-radius: 12px; margin-top: 20px; 
             cursor: pointer; width: 100%; font-weight: bold; font-size: 16px;
-            transition: 0.3s;
         }
     </style>
 </head>
@@ -130,13 +129,13 @@
 
     <div class="video-container">
         <video autoplay muted loop playsinline id="background-video">
-            <source src="https://moewalls.com/wp-content/uploads/preview/2025/neon-waterfall-preview.webm" type="video/mp4">
+            <source src="https://moewalls.com/wp-content/uploads/preview/2025/liquid-blue-ocean-preview.webm" type="video/mp4">
         </video>
     </div>
 
     <div class="main-content">
         <div class="header-sticky">
-            <input type="text" id="buscador" placeholder="🔎 ¿Qué buscamos hoy?" onkeyup="filtrar()">
+            <input type="text" id="buscador" placeholder="🔎 Buscar medicamento..." onkeyup="filtrar()">
         </div>
         <div id="lista-meds">
             <p style="text-align: center;">Cargando catálogo...</p>
@@ -145,19 +144,16 @@
 
     <div class="modal-overlay" id="modal" onclick="cerrarModal(event)">
         <div class="modal-content">
-            <h2 id="m-nombre" style="margin:0; font-size: 24px;"></h2>
-            <p id="m-tipo" style="font-weight:bold; margin-top:5px;"></p>
-            
+            <h2 id="m-nombre" style="margin:0; font-size: 22px;"></h2>
+            <p id="m-tipo" style="font-weight:bold; margin-top:5px; font-size: 14px;"></p>
             <img id="m-img" class="modal-img" src="" alt="Producto">
-            
             <div class="info-grid">
                 <div class="info-item"><b>Sustancia</b><span id="m-sust"></span></div>
                 <div class="info-item"><b>Laboratorio</b><span id="m-lab"></span></div>
-                <div class="info-item"><b>Presentación</b><span id="m-cant"></span></div>
+                <div class="info-item"><b>Contenido</b><span id="m-cant"></span></div>
                 <div class="info-item"><b>Código EAN</b><span id="m-ean"></span></div>
                 <div class="info-item"><b>Venta Protegida</b><span id="m-venta"></span></div>
             </div>
-            
             <button class="modal-close" onclick="document.getElementById('modal').classList.remove('active')">Volver al catálogo</button>
         </div>
     </div>
@@ -185,6 +181,10 @@
                         img: col[8]?.trim() || "https://via.placeholder.com/150?text=Sin+Foto"
                     };
                 }).filter(m => m !== null);
+
+                // --- ORDEN ALFABÉTICO REINSTALADO ---
+                medicamentos.sort((a, b) => a.nombre.localeCompare(b.nombre));
+                
                 renderizar(medicamentos);
             } catch (e) { console.error(e); }
         }
@@ -192,18 +192,16 @@
         function renderizar(lista) {
             const contenedor = document.getElementById('lista-meds');
             contenedor.innerHTML = lista.map(m => {
-                // Lógica de color de Irving
                 const esPatente = m.patente.toLowerCase().includes("patente");
                 const colorTexto = esPatente ? 'var(--color-patente)' : 'var(--color-generico)';
-                
                 return `
                 <div class="card" onclick="abrirModal('${m.codigo}')">
-                    <div style="display:flex; justify-content: space-between; align-items: flex-start;">
-                        <div style="font-size:10px; color:rgba(255,255,255,0.5); margin-bottom:5px;">${m.laboratorio}</div>
-                        <span class="tipo-tag" style="color: ${colorTexto};">${m.patente}</span>
+                    <div style="display:flex; justify-content: space-between; margin-bottom:8px;">
+                        <div style="font-size:10px; color:rgba(255,255,255,0.5);">${m.laboratorio}</div>
+                        <span class="tipo-tag-card" style="color: ${colorTexto};">${m.patente}</span>
                     </div>
                     <h3>${m.nombre}</h3>
-                    <span style="color:#4da3ff; font-size:14px; font-weight:bold;">${m.sustancia}</span>
+                    <span style="color:#4da3ff; font-size:13px; font-weight:bold;">${m.sustancia}</span>
                 </div>
             `}).join('');
         }
@@ -211,22 +209,17 @@
         function abrirModal(ean) {
             const med = medicamentos.find(m => m.codigo === ean);
             if(!med) return;
-            
-            // Aplicar color también en el modal
             const esPatente = med.patente.toLowerCase().includes("patente");
             const colorModal = esPatente ? 'var(--color-patente)' : 'var(--color-generico)';
-            
             document.getElementById('m-nombre').innerText = med.nombre;
             document.getElementById('m-sust').innerText = med.sustancia;
             document.getElementById('m-lab').innerText = med.laboratorio;
             document.getElementById('m-cant').innerText = med.unidades;
             document.getElementById('m-ean').innerText = med.codigo;
             document.getElementById('m-venta').innerText = med.tipoVenta;
-            
             const tipoEl = document.getElementById('m-tipo');
             tipoEl.innerText = med.patente.toUpperCase();
             tipoEl.style.color = colorModal;
-            
             document.getElementById('m-img').src = med.img;
             document.getElementById('modal').classList.add('active');
         }
@@ -235,7 +228,12 @@
 
         function filtrar() {
             const busqueda = document.getElementById('buscador').value.toLowerCase();
-            renderizar(medicamentos.filter(m => m.nombre.toLowerCase().includes(busqueda) || m.sustancia.toLowerCase().includes(busqueda)));
+            const filtrados = medicamentos.filter(m => 
+                m.nombre.toLowerCase().includes(busqueda) || 
+                m.sustancia.toLowerCase().includes(busqueda)
+            );
+            // El orden se mantiene porque ya ordenamos el array original
+            renderizar(filtrados);
         }
 
         cargarInventario();
