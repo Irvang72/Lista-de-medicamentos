@@ -3,195 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vademécum Soriana - Irving</title>
+    <title>Lista de medicamentos</title>
     <style>
         :root {
-            --bg: rgba(0, 0, 0, 0.7); /* Fondo semi-transparente para ver el video */
-            --card: rgba(18, 18, 18, 0.9);
+            --bg: rgba(0, 0, 0, 0);
+            --card: rgba(255, 255, 255, 0.08); 
             --accent: #007bff;
             --text-main: #ffffff;
             --text-dim: #b0b0b0;
-            --border: #2c2c2c;
+            --border: rgba(255, 255, 255, 0.15);
             --antibiotico: #ff4d4d;
+            /* Nuevos colores para Irving */
+            --color-patente: #00ff88;  /* Verde Neón */
+            --color-generico: #4da3ff;  /* Azul Neón */
         }
 
-        /* ESTILOS DEL VIDEO DE FONDO */
         body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
+            margin: 0; padding: 0; height: 100%;
             font-family: 'Segoe UI', sans-serif;
             color: var(--text-main);
+            background-color: #00000000;
         }
 
+        /* VIDEO DE FONDO */
         .video-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; z-index: -1;
         }
 
         #background-video {
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            filter: brightness(0.4); /* Oscurece el video para que resalte el texto */
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: brightness(0.4);
         }
 
-        /* CONTENIDO DEL BUSCADOR */
+        /* CONTENIDO PRINCIPAL */
         .main-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 15px;
-            min-height: 100vh;
-            overflow-y: auto;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 15px; min-height: 100vh; position: relative; z-index: 1;
         }
 
         .header-sticky {
-            position: sticky;
-            top: 0;
-            width: 100%;
-            max-width: 500px;
-            padding: 10px 0;
-            z-index: 100;
+            position: sticky; top: 0; width: 100%; max-width: 500px;
+            padding: 10px 0; z-index: 100;
         }
 
         #buscador {
-            width: 100%;
-            padding: 15px;
-            background: rgba(26, 26, 26, 0.9);
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            color: white;
-            font-size: 16px;
-            outline: none;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-        }
-
-        .filter-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .filter-btn {
-            flex: 1;
-            padding: 10px;
-            border-radius: 8px;
+            width: 100%; padding: 15px;
+            background: rgba(0, 0, 0, 0.186);
             border: 1px solid var(--border);
-            background: rgba(26, 26, 26, 0.8);
-            color: var(--text-dim);
-            cursor: pointer;
-            font-size: 13px;
-            transition: 0.3s;
+            border-radius: 12px; color: white;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            outline: none; margin-bottom: 10px; box-sizing: border-box;
         }
 
-        .filter-btn.active {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-
+        /* TARJETAS */
         #lista-meds { width: 100%; max-width: 500px; }
 
         .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.2s;
-            backdrop-filter: blur(5px);
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 15px; padding: 20px; margin-bottom: 20px;
+            cursor: pointer; transition: 0.3s;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        }
+        .card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.12); }
+        .card.requiere-receta { border-left: 5px solid var(--antibiotico); }
+        .card h3 { margin: 0; color: #fff; font-size: 22px; }
+
+        /* Estilo para las etiquetas de tipo */
+        .tipo-tag {
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.3);
         }
 
-        .card:active { transform: scale(0.98); }
-        .card.requiere-receta { border-left: 5px solid var(--antibiotico); }
-        .card h3 { margin: 0; color: var(--accent); font-size: 22px; }
-        
-        .sustancia-tag { color: #4da3ff; font-size: 14px; margin-bottom: 10px; display: block; font-weight: bold; }
-        
         /* MODAL */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 1000;
-            display: none; justify-content: center; align-items: center;
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000; display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         }
+
         .modal-content {
-            background: #181818; width: 85%; max-width: 380px; padding: 25px;
-            border-radius: 20px; border: 1px solid #333; text-align: center;
-            animation: aparecer 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            background: rgba(255, 255, 255, 0.07);
+            width: 90%; max-width: 400px; padding: 30px;
+            border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center; color: white;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            animation: aparecer 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
         }
+
         @keyframes aparecer {
-            from { transform: scale(0.7); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
+
         .modal-overlay.active { display: flex; }
-        .modal-img { width: 100%; max-height: 180px; object-fit: contain; background: white; border-radius: 12px; margin: 15px 0; padding: 10px; }
-        .modal-close { background: var(--accent); border: none; color: white; padding: 10px 20px; border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%; font-weight: bold; }
+
+        .modal-img { 
+            width: 100%; max-height: 200px; object-fit: contain; 
+            background: white; border-radius: 20px; 
+            margin: 20px 0; padding: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .info-grid {
+            text-align: left; display: grid; gap: 12px; margin-top: 15px;
+        }
+
+        .info-item b { color: var(--accent); font-size: 13px; text-transform: uppercase; display: block; }
+        .info-item span { font-size: 16px; color: #eee; }
+
+        .modal-close { 
+            background: var(--accent); border: none; color: white; 
+            padding: 15px; border-radius: 15px; margin-top: 25px; 
+            cursor: pointer; width: 100%; font-weight: bold; font-size: 16px;
+            transition: 0.3s;
+        }
     </style>
 </head>
 <body>
 
     <div class="video-container">
-        <video autoplay muted loop id="background-video">
-            <source src="/wp-content/uploads/preview/2025/mount-fuji-preview.webm" type="video/webm">
+        <video autoplay muted loop playsinline id="background-video">
+            <source src="https://moewalls.com/wp-content/uploads/preview/2025/neon-waterfall-preview.webm" type="video/mp4">
         </video>
     </div>
 
     <div class="main-content">
         <div class="header-sticky">
-            <input type="text" id="buscador" placeholder="🔎 Escribe para buscar..." onkeyup="filtrar()">
-            <div class="filter-container">
-                <button id="btn-marca" class="filter-btn active" onclick="setFilter('marca')">Por Marca</button>
-                <button id="btn-comp" class="filter-btn" onclick="setFilter('componente')">Por Sustancia</button>
-            </div>
+            <input type="text" id="buscador" placeholder="🔎 ¿Qué buscamos hoy?" onkeyup="filtrar()">
         </div>
-
         <div id="lista-meds">
-            <p style="text-align: center; color: var(--text-dim);">Cargando catálogo...</p>
+            <p style="text-align: center;">Cargando catálogo...</p>
         </div>
     </div>
 
     <div class="modal-overlay" id="modal" onclick="cerrarModal(event)">
         <div class="modal-content">
-            <h2 id="m-nombre" style="margin:0; color:var(--accent);"></h2>
-            <p id="m-tipo" style="font-size:12px; color:#00ff88; margin:5px 0; font-weight:bold;"></p>
+            <h2 id="m-nombre" style="margin:0; font-size: 24px;"></h2>
+            <p id="m-tipo" style="font-weight:bold; margin-top:5px;"></p>
+            
             <img id="m-img" class="modal-img" src="" alt="Producto">
-            <div style="text-align: left; font-size: 14px; color: var(--text-dim);">
-                <p><b>Sustancia:</b> <span id="m-sust" style="color:#4da3ff"></span></p>
-                <p><b>Laboratorio:</b> <span id="m-lab" style="color:white"></span></p>
-                <p><b>Contenido:</b> <span id="m-cant" style="color:white"></span></p>
-                <p><b>Código:</b> <span id="m-ean" style="color:white"></span></p>
-                <p><b>Require receta:</b> <span id="m-venta" style="color:white"></span></p>
+            
+            <div class="info-grid">
+                <div class="info-item"><b>Sustancia</b><span id="m-sust"></span></div>
+                <div class="info-item"><b>Laboratorio</b><span id="m-lab"></span></div>
+                <div class="info-item"><b>Presentación</b><span id="m-cant"></span></div>
+                <div class="info-item"><b>Código EAN</b><span id="m-ean"></span></div>
+                <div class="info-item"><b>Venta Protegida</b><span id="m-venta"></span></div>
             </div>
-            <button class="modal-close" onclick="document.getElementById('modal').classList.remove('active')">Cerrar</button>
+            
+            <button class="modal-close" onclick="document.getElementById('modal').classList.remove('active')">Volver al catálogo</button>
         </div>
     </div>
 
     <script>
         const URL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRt6zIpSJpUR8TzkoTNlXz87b68s-dTgxEl7AZykJVd_KKYyCb9zKmi5gHV_6S7MZa8Akr_TPeWVllV/pub?output=csv"; 
         let medicamentos = [];
-        let modoFiltro = 'marca';
 
         async function cargarInventario() {
             try {
                 const response = await fetch(URL_CSV + "&cb=" + Date.now());
                 const data = await response.text();
                 const filas = data.split(/\r?\n/).slice(1); 
-
                 medicamentos = filas.map(linea => {
                     const col = linea.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                     if (col.length < 3) return null;
@@ -200,33 +179,31 @@
                         sustancia: col[1]?.replace(/"/g, '').trim(),
                         codigo: col[2]?.trim(),
                         unidades: col[3]?.trim() || "N/A",
-                        tipoVenta: col[4]?.trim() || "Libre",
+                        tipoVenta: col[4]?.trim() || "No",
                         patente: col[6]?.trim() || "Genérico",
                         laboratorio: col[7]?.trim() || "N/A",
                         img: col[8]?.trim() || "https://via.placeholder.com/150?text=Sin+Foto"
                     };
                 }).filter(m => m !== null);
-
-                medicamentos.sort((a, b) => a.nombre.localeCompare(b.nombre));
                 renderizar(medicamentos);
-            } catch (e) {
-                document.getElementById('lista-meds').innerHTML = "<p style='color:red'>Error al cargar datos.</p>";
-            }
+            } catch (e) { console.error(e); }
         }
 
         function renderizar(lista) {
             const contenedor = document.getElementById('lista-meds');
             contenedor.innerHTML = lista.map(m => {
-                const esAntibio = m.tipoVenta.toLowerCase().includes("antibio") || m.tipoVenta.toLowerCase().includes("fracc");
+                // Lógica de color de Irving
+                const esPatente = m.patente.toLowerCase().includes("patente");
+                const colorTexto = esPatente ? 'var(--color-patente)' : 'var(--color-generico)';
+                
                 return `
-                <div class="card ${esAntibio ? 'requiere-receta' : ''}" onclick="abrirModal('${m.codigo}')">
-                    <div style="font-size:10px; color:gray; margin-bottom:5px;">${m.laboratorio}</div>
-                    <h3>${m.nombre}</h3>
-                    <span class="sustancia-tag">${m.sustancia}</span>
-                    <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim);">
-                        <span>Código: ${m.codigo}</span>
-                        <span style="color:#00ff88">${m.patente}</span>
+                <div class="card" onclick="abrirModal('${m.codigo}')">
+                    <div style="display:flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="font-size:10px; color:rgba(255,255,255,0.5); margin-bottom:5px;">${m.laboratorio}</div>
+                        <span class="tipo-tag" style="color: ${colorTexto};">${m.patente}</span>
                     </div>
+                    <h3>${m.nombre}</h3>
+                    <span style="color:#4da3ff; font-size:14px; font-weight:bold;">${m.sustancia}</span>
                 </div>
             `}).join('');
         }
@@ -234,33 +211,31 @@
         function abrirModal(ean) {
             const med = medicamentos.find(m => m.codigo === ean);
             if(!med) return;
+            
+            // Aplicar color también en el modal
+            const esPatente = med.patente.toLowerCase().includes("patente");
+            const colorModal = esPatente ? 'var(--color-patente)' : 'var(--color-generico)';
+            
             document.getElementById('m-nombre').innerText = med.nombre;
             document.getElementById('m-sust').innerText = med.sustancia;
             document.getElementById('m-lab').innerText = med.laboratorio;
             document.getElementById('m-cant').innerText = med.unidades;
             document.getElementById('m-ean').innerText = med.codigo;
             document.getElementById('m-venta').innerText = med.tipoVenta;
-            document.getElementById('m-tipo').innerText = med.patente.toUpperCase();
+            
+            const tipoEl = document.getElementById('m-tipo');
+            tipoEl.innerText = med.patente.toUpperCase();
+            tipoEl.style.color = colorModal;
+            
             document.getElementById('m-img').src = med.img;
             document.getElementById('modal').classList.add('active');
         }
 
         function cerrarModal(e) { if(e.target.id === 'modal') document.getElementById('modal').classList.remove('active'); }
 
-        function setFilter(modo) {
-            modoFiltro = modo;
-            document.getElementById('btn-marca').classList.toggle('active', modo === 'marca');
-            document.getElementById('btn-comp').classList.toggle('active', modo === 'componente');
-            filtrar();
-        }
-
         function filtrar() {
             const busqueda = document.getElementById('buscador').value.toLowerCase();
-            const filtrados = medicamentos.filter(m => {
-                const texto = modoFiltro === 'marca' ? m.nombre : m.sustancia;
-                return texto.toLowerCase().includes(busqueda);
-            });
-            renderizar(filtrados);
+            renderizar(medicamentos.filter(m => m.nombre.toLowerCase().includes(busqueda) || m.sustancia.toLowerCase().includes(busqueda)));
         }
 
         cargarInventario();
