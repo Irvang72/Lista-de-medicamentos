@@ -6,25 +6,23 @@
     <title>Catálogo de Medicamentos</title>
     <style>
         :root {
-            --bg: rgba(0, 0, 0, 0);
             --card: rgba(255, 255, 255, 0.08); 
             --accent: #007bff;
             --text-main: #ffffff;
-            --text-dim: #b0b0b0;
             --border: rgba(255, 255, 255, 0.15);
-            --antibiotico: #ff4d4d;
             --color-patente: #00ff88;  /* Verde Neón */
             --color-generico: #4da3ff;  /* Azul Neón */
         }
 
         body, html {
             margin: 0; padding: 0; height: 100%;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: var(--text-main);
-            background-color: #00000000; 
+            background-color: #00000000;
+            overflow-x: hidden;
         }
 
-        /* VIDEO DE FONDO */
+        /* FONDO DE VIDEO CON NEBULOSA */
         .video-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             overflow: hidden; z-index: -1;
@@ -33,13 +31,12 @@
         #background-video {
             width: 100%; height: 100%;
             object-fit: cover;
-            filter: brightness(1.0);
         }
 
         /* CONTENIDO PRINCIPAL */
         .main-content {
             display: flex; flex-direction: column; align-items: center;
-            padding: 15px; min-height: 100vh; position: relative; z-index: 1;
+            padding: 20px; min-height: 100vh; position: relative; z-index: 1;
         }
 
         .header-sticky {
@@ -49,112 +46,131 @@
 
         #buscador {
             width: 100%; padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.205);
             border: 1px solid var(--border);
             border-radius: 12px; color: white;
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            outline: none; margin-bottom: 10px; box-sizing: border-box;
+            outline: none; box-sizing: border-box; font-size: 16px;
         }
 
-        /* TARJETAS */
-        #lista-meds { width: 100%; max-width: 500px; }
+        /* TARJETAS DEL CATÁLOGO */
+        #lista-meds { width: 100%; max-width: 500px; margin-top: 20px; }
 
         .card {
             background: var(--card); border: 1px solid var(--border);
             border-radius: 15px; padding: 20px; margin-bottom: 20px;
-            cursor: pointer; transition: 0.3s;
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            cursor: pointer; transition: 0.3s ease;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
         }
-        .card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.12); }
-        .card.requiere-receta { border-left: 5px solid var(--antibiotico); }
-        .card h3 { margin: 0; color: #fff; font-size: 20px; }
+        .card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0); }
+        .card h3 { margin: 5px 0; color: #fff; font-size: 20px; }
 
-        .tipo-tag-card {
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
+        .tipo-tag-card { font-size: 10px; font-weight: bold; text-transform: uppercase; }
 
-        /* MODAL */
+        /* MODAL (CUADRO EMERGENTE) */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 1000; display: none; justify-content: center; align-items: center;
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         }
+        .modal-overlay.active { display: flex; }
 
         .modal-content {
             background: rgba(255, 255, 255, 0.07);
-            width: 90%; max-width: 400px; padding: 25px;
+            width: 90%; max-width: 420px; padding: 25px;
             border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.2);
             text-align: center; color: white;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
             animation: aparecer 0.3s ease-out;
         }
 
         @keyframes aparecer {
-            from { transform: scale(0.9); opacity: 0; }
+            from { transform: scale(0.85); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
 
-        .modal-overlay.active { display: flex; }
+        /* CONTENEDOR DE IMAGEN ADAPTABLE */
+        .img-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            margin: 15px 0;
+            padding: 10px;
+            display: flex; justify-content: center; align-items: center;
+        }
 
         .modal-img { 
-            display: block;
-            margin: 15px auto; 
             width: 100%; 
-            max-height: 200px; 
-            object-fit: contain; 
-            background: white; 
-            border-radius: 15px; 
-            padding: 10px;
-            box-sizing: border-box;
+            max-height: 220px; /* Altura máxima */
+            object-fit: contain; /* <--- ESTA ES LA CLAVE PARA QUE SE AJUSTE SOLA */
+            background: transparent; 
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+            display: block; /* Asegura que se comporte bien */
+            margin: 0 auto; /* Centrada */
         }
 
-        .info-grid {
-            text-align: left; display: grid; gap: 10px; margin-top: 15px;
+        /* ETIQUETAS DEL MODAL */
+        .tags-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
+        
+        .tag {
+            font-size: 11px; font-weight: bold; padding: 5px 12px;
+            border-radius: 20px; text-transform: uppercase; border: 1px solid currentColor;
         }
+        .tag-grupo { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); }
 
-        .info-item b { color: var(--accent); font-size: 12px; text-transform: uppercase; display: block; }
-        .info-item span { font-size: 15px; color: #eee; }
+        /* GRID DE INFORMACIÓN */
+        .info-grid { text-align: left; display: grid; gap: 12px; margin-top: 10px; }
+        .info-item b { color: var(--accent); font-size: 11px; text-transform: uppercase; display: block; margin-bottom: 2px; }
+        .info-item span { font-size: 15px; color: #f0f0f0; }
 
         .modal-close { 
             background: var(--accent); border: none; color: white; 
-            padding: 12px; border-radius: 12px; margin-top: 20px; 
+            padding: 14px; border-radius: 12px; margin-top: 25px; 
             cursor: pointer; width: 100%; font-weight: bold; font-size: 16px;
+            transition: 0.2s;
         }
+        .modal-close:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
 
     <div class="video-container">
         <video autoplay muted loop playsinline id="background-video">
-            <source src="https://moewalls.com//wp-content/uploads/preview/2022/particle-wave-preview.webm" type="video/mp4">
+            <source src="https://desktophut.com/files/Violet Glow Mix Particles Live Wallpaper.mp4" type="video/mp4">
         </video>
     </div>
 
     <div class="main-content">
         <div class="header-sticky">
-            <input type="text" id="buscador" placeholder="🔎 Buscar medicamento..." onkeyup="filtrar()">
+            <input type="text" id="buscador" placeholder="🔎 Buscar por nombre o sustancia..." onkeyup="filtrar()">
         </div>
         <div id="lista-meds">
-            <p style="text-align: center;">Cargando catálogo...</p>
+            <p style="text-align: center; opacity: 0.6;">Conectando con el excel pedorro...</p>
         </div>
     </div>
 
     <div class="modal-overlay" id="modal" onclick="cerrarModal(event)">
         <div class="modal-content">
-            <h2 id="m-nombre" style="margin:0; font-size: 22px;"></h2>
-            <p id="m-tipo" style="font-weight:bold; margin-top:5px; font-size: 14px;"></p>
-            <img id="m-img" class="modal-img" src="" alt="Producto">
-            <div class="info-grid">
-                <div class="info-item"><b>Sustancia</b><span id="m-sust"></span></div>
-                <div class="info-item"><b>Laboratorio</b><span id="m-lab"></span></div>
-                <div class="info-item"><b>Contenido</b><span id="m-cant"></span></div>
-                <div class="info-item"><b>Código</b><span id="m-ean"></span></div>
-                <div class="info-item"><b>Requiere receta</b><span id="m-venta"></span></div>
+            <h2 id="m-nombre" style="margin:0; font-size: 24px;"></h2>
+            
+            <div class="tags-row">
+                <span id="m-tipo" class="tag"></span>
+                <span id="m-grupo" class="tag tag-grupo"></span>
             </div>
-            <button class="modal-close" onclick="document.getElementById('modal').classList.remove('active')">Volver al catálogo</button>
+
+            <div class="img-container">
+                <img id="m-img" class="modal-img" src="" alt="Cargando...">
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item"><b>Sustancia Activa</b><span id="m-sust"></span></div>
+                <div class="info-item"><b>Laboratorio</b><span id="m-lab"></span></div>
+                <div class="info-item"><b>Presentación Comercial</b><span id="m-presentacion"></span></div>
+                <div class="info-item"><b>Código de Barras</b><span id="m-ean"></span></div>
+                <div class="info-item"><b>Venta bajo receta</b><span id="m-venta"></span></div>
+            </div>
+
+            <button class="modal-close" onclick="document.getElementById('modal').classList.remove('active')">Cerrar</button>
         </div>
     </div>
 
@@ -167,38 +183,49 @@
                 const response = await fetch(URL_CSV + "&cb=" + Date.now());
                 const data = await response.text();
                 const filas = data.split(/\r?\n/).slice(1); 
+                
                 medicamentos = filas.map(linea => {
                     const col = linea.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                     if (col.length < 3) return null;
+                    
+                    // MAPEO DE COLUMNAS (A-K)
                     return {
-                        nombre: col[0]?.replace(/"/g, '').trim(),
-                        sustancia: col[1]?.replace(/"/g, '').trim(),
-                        codigo: col[2]?.trim(),
-                        unidades: col[3]?.trim() || "N/A",
-                        tipoVenta: col[4]?.trim() || "No",
-                        patente: col[6]?.trim() || "Genérico",
-                        laboratorio: col[7]?.trim() || "N/A",
-                        img: col[8]?.trim() || "https://via.placeholder.com/150?text=Sin+Foto"
+                        nombre: col[0]?.replace(/"/g, '').trim(),      // Col A
+                        sustancia: col[1]?.replace(/"/g, '').trim(),   // Col B
+                        codigo: col[2]?.trim(),                        // Col C
+                        cantidad: col[3]?.trim() || "0",               // Col D
+                        receta: col[4]?.trim() || "No",                // Col E
+                        empaque: col[5]?.trim() || "Caja",             // Col F
+                        patente: col[6]?.trim() || "Genérico",         // Col G
+                        laboratorio: col[7]?.trim() || "N/A",          // Col H
+                        img: col[8]?.trim() || "https://via.placeholder.com/150", // Col I
+                        unidad: col[9]?.trim() || "Unidades",          // Col J
+                        grupo: col[10]?.trim() || "General"            // Col K
                     };
                 }).filter(m => m !== null);
 
-                // --- ORDEN ALFABÉTICO REINSTALADO ---
                 medicamentos.sort((a, b) => a.nombre.localeCompare(b.nombre));
-                
                 renderizar(medicamentos);
-            } catch (e) { console.error(e); }
+            } catch (e) { 
+                console.error("Error cargando datos:", e);
+                document.getElementById('lista-meds').innerHTML = "<p>Error al conectar con el servidor.</p>";
+            }
         }
 
         function renderizar(lista) {
             const contenedor = document.getElementById('lista-meds');
+            if(lista.length === 0) {
+                contenedor.innerHTML = "<p style='text-align:center'>No se encontraron resultados.</p>";
+                return;
+            }
             contenedor.innerHTML = lista.map(m => {
                 const esPatente = m.patente.toLowerCase().includes("patente");
-                const colorTexto = esPatente ? 'var(--color-patente)' : 'var(--color-generico)';
+                const colorTag = esPatente ? 'var(--color-patente)' : 'var(--color-generico)';
                 return `
                 <div class="card" onclick="abrirModal('${m.codigo}')">
-                    <div style="display:flex; justify-content: space-between; margin-bottom:8px;">
-                        <div style="font-size:10px; color:rgba(255,255,255,0.5);">${m.laboratorio}</div>
-                        <span class="tipo-tag-card" style="color: ${colorTexto};">${m.patente}</span>
+                    <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom:8px;">
+                        <div style="font-size:10px; color:rgba(255,255,255,0.4); text-transform:uppercase;">${m.laboratorio}</div>
+                        <span class="tipo-tag-card" style="color: ${colorTag};">${m.patente}</span>
                     </div>
                     <h3>${m.nombre}</h3>
                     <span style="color:#4da3ff; font-size:13px; font-weight:bold;">${m.sustancia}</span>
@@ -209,30 +236,45 @@
         function abrirModal(ean) {
             const med = medicamentos.find(m => m.codigo === ean);
             if(!med) return;
+
             const esPatente = med.patente.toLowerCase().includes("patente");
             const colorModal = esPatente ? 'var(--color-patente)' : 'var(--color-generico)';
+
+            // Llenar datos básicos
             document.getElementById('m-nombre').innerText = med.nombre;
             document.getElementById('m-sust').innerText = med.sustancia;
             document.getElementById('m-lab').innerText = med.laboratorio;
-            document.getElementById('m-cant').innerText = med.unidades;
             document.getElementById('m-ean').innerText = med.codigo;
-            document.getElementById('m-venta').innerText = med.tipoVenta;
+            document.getElementById('m-venta').innerText = med.receta;
+            
+            // LA FRASE ARMADA: Empaque + Cantidad + Unidad
+            document.getElementById('m-presentacion').innerText = `${med.empaque} con ${med.cantidad} ${med.unidad}`;
+
+            // Configurar Etiquetas
             const tipoEl = document.getElementById('m-tipo');
-            tipoEl.innerText = med.patente.toUpperCase();
+            tipoEl.innerText = med.patente;
             tipoEl.style.color = colorModal;
+
+            const grupoEl = document.getElementById('m-grupo');
+            grupoEl.innerText = med.grupo;
+
+            // Imagen con transparencia
             document.getElementById('m-img').src = med.img;
+
             document.getElementById('modal').classList.add('active');
         }
 
-        function cerrarModal(e) { if(e.target.id === 'modal') document.getElementById('modal').classList.remove('active'); }
+        function cerrarModal(e) { 
+            if(e.target.id === 'modal') document.getElementById('modal').classList.remove('active'); 
+        }
 
         function filtrar() {
             const busqueda = document.getElementById('buscador').value.toLowerCase();
             const filtrados = medicamentos.filter(m => 
                 m.nombre.toLowerCase().includes(busqueda) || 
-                m.sustancia.toLowerCase().includes(busqueda)
+                m.sustancia.toLowerCase().includes(busqueda) ||
+                m.laboratorio.toLowerCase().includes(busqueda)
             );
-            // El orden se mantiene porque ya ordenamos el array original
             renderizar(filtrados);
         }
 
